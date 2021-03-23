@@ -6,21 +6,43 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using WebApp.Models;
+using Data.EF;
+using Data.Entities;
+using Application.Books;
+using Application.Books.DTOS;
 
-namespace WebApp.Controllers
+namespace WEBAPP.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        // private readonly ILogger<HomeController> _logger;
+        private readonly IPublicBookService _publicBookService;
+        public HomeController(IPublicBookService publicBookService)
         {
-            _logger = logger;
+            _publicBookService = publicBookService;
         }
 
-        public IActionResult Index()
+        // public HomeController(ILogger<HomeController> logger)
+        // {
+        //     _logger = logger;
+        // }
+        [HttpGet]
+        public async Task<IActionResult> Index()
+        {
+            return View(await _publicBookService.GetAll());
+        }
+
+        [HttpGet]
+        public IActionResult Create()
         {
             return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(BookCreateRequest book)
+        {
+            var result = _publicBookService.Create(book);
+            return View(result);
         }
 
         public IActionResult Privacy()
